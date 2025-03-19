@@ -4,7 +4,7 @@
     "publisher": "CauchyKe",
     "displayName": "fine-i18n-tool",
     "description": "",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "engines": {
         "vscode": "^1.96.0"
     },
@@ -25,8 +25,8 @@
             "properties": {
                 "fineI18nTool.i18nFileSuffix": {
                     "type": "string",
-                    "default": "_zh_CN.properties",
-                    "description": "国际化文件后缀，当前仅支持properties格式的文件"
+                    "default": "_zh_CN.properties, zh_CN.json",
+                    "description": "国际化文件后缀，多个之间用,隔开，当前支持properties和json格式的文件"
                 },
                 "fineI18nTool.i18nFuncName": {
                     "type": "string",

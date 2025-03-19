@@ -1,23 +1,12 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import propertiesReader from 'properties-reader';
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
+import * as fs from 'fs';
+import * as path from 'path';
+import propertiesReader from 'properties-reader';
+import * as vscode from 'vscode';
 import PACKAGE from '../package.json';
-
-/**
- * 配置项
- */
-const configuration = {
-    selector: [
-        { language: 'typescript', scheme: 'file' },
-        { language: 'typescriptreact', scheme: 'file' },
-        { language: 'javascript', scheme: 'file' },
-        { language: 'javascriptreact', scheme: 'file' },
-    ],
-    i18nFileSuffix: 'i18nFileSuffix',
-    i18nFuncName: 'i18nFuncName',
-};
+import { getConfiguration, setConfiguration } from './configuration';
+import { formatI18nValue } from './util';
 
 /**
  * 国际化字典
@@ -39,7 +28,9 @@ function registerI18nDocumentsLoad() {
  * 提示
  */
 function registerInlayHintsProvider() {
-    vscode.languages.registerInlayHintsProvider(configuration.selector, {
+    const { selector, i18nFuncName } = getConfiguration();
+
+    vscode.languages.registerInlayHintsProvider(selector, {
         provideInlayHints(document) {
             const hints: any[] = [];
             const text = document.getText();
@@ -52,7 +43,7 @@ function registerInlayHintsProvider() {
 
                 traverse(ast, {
                     CallExpression(path) {
-                        if ('name' in path.node.callee && path.node.callee.name === configuration.i18nFuncName && path.node.arguments.length > 0) {
+                        if ('name' in path.node.callee && path.node.callee.name === i18nFuncName && path.node.arguments.length > 0) {
                             const keyNode = path.node.arguments[0];
 
                             if (keyNode.type === 'StringLiteral') {
@@ -86,12 +77,14 @@ function registerInlayHintsProvider() {
  */
 const TRIIGER_CHAR_LIST = ['"', "'", '`'];
 function registerCompletionItemProvider() {
+    const { selector, i18nFuncName } = getConfiguration();
+
     vscode.languages.registerCompletionItemProvider(
-        configuration.selector,
+        selector,
         {
             provideCompletionItems: async function (document, position) {
                 const linePrefix = document.lineAt(position).text.substr(0, position.character);
-                if (TRIIGER_CHAR_LIST.some((char) => linePrefix.endsWith(`${configuration.i18nFuncName}(${char}`))) {
+                if (TRIIGER_CHAR_LIST.some((char) => linePrefix.endsWith(`${i18nFuncName}(${char}`))) {
                     return Object.entries(i18nMap).map(([key, value]) => {
                         const formatValue = formatI18nValue(value);
                         const item = new vscode.CompletionItem(`${key}(${formatValue})`);
@@ -115,34 +108,45 @@ function registerCompletionItemProvider() {
  * @param uris
  */
 async function loadI18nFiles(uris?: vscode.Uri[]) {
-    const files = uris ?? (await vscode.workspace.findFiles(`**/*${configuration.i18nFileSuffix}`));
+    const { i18nFileSuffixList } = getConfiguration();
+
+    function updateI18nMap(uri: vscode.Uri, newI18nMap: Record<string, string>) {
+        i18nMap = {
+            ...i18nMap,
+            ...newI18nMap,
+        };
+
+        console.log(`[${PACKAGE.name}] i18n file updated: ${uri.path}`);
+    }
+
+    const files =
+        uris ??
+        (await Promise.all(i18nFileSuffixList.map((i18nFileSuffix) => vscode.workspace.findFiles(`**/*${i18nFileSuffix}`, 'node_modules/**')))).flat(1);
 
     files.forEach((uri) => {
         const content = fs.readFileSync(uri.fsPath, 'utf-8');
-        // @ts-ignore
-        const currI18nMap: Record<string, string> = propertiesReader(null).read(content).getAllProperties();
 
-        console.log(`[${PACKAGE.name}] i18n file updated: ${uri}`);
-
-        i18nMap = {
-            ...i18nMap,
-            ...currI18nMap,
-        };
+        switch (path.extname(uri.fsPath)) {
+            case '.properties':
+                // @ts-ignore
+                updateI18nMap(uri, propertiesReader(null).read(content).getAllProperties());
+                break;
+            case '.json': {
+                updateI18nMap(uri, JSON.parse(content));
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     });
 }
 
-/**
- * 格式化国际化值
- * @param value
- * @returns
- */
-function formatI18nValue(value: string) {
-    return unescape(value.replaceAll('\\', '%'));
-}
-
 export async function activate() {
-    configuration.i18nFileSuffix = vscode.workspace.getConfiguration('fineI18nTool').get('i18nFileSuffix') as string;
-    configuration.i18nFuncName = vscode.workspace.getConfiguration('fineI18nTool').get('i18nFuncName') as string;
+    const configuration = setConfiguration({
+        i18nFileSuffixList: (vscode.workspace.getConfiguration('fineI18nTool').get('i18nFileSuffix') as string).split(',').map((str) => str.trim()),
+        i18nFuncName: vscode.workspace.getConfiguration('fineI18nTool').get('i18nFuncName') as string,
+    });
 
     console.log(`[${PACKAGE.name}] configuration: ${JSON.stringify(configuration)}`);
 
