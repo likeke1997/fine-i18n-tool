@@ -2,9 +2,9 @@
     "name": "fine-i18n-tool",
     "author": "Cauchy.Ke",
     "publisher": "CauchyKe",
-    "displayName": "fine-i18n-tool",
+    "displayName": "FINE Dev Tools",
     "description": "i18n inlay hints & completion for JS/TS; FDL monorepo workspace info (status bar, dev URLs, port checks).",
-    "version": "0.0.5",
+    "version": "0.0.7",
     "engines": {
         "vscode": "^1.96.0"
     },
@@ -54,7 +54,7 @@
                 "properties": {
                     "fineI18nTool.i18nFileSuffix": {
                         "type": "string",
-                        "default": "_zh_CN.properties, zh_CN.json",
+                        "default": "zh_CN.properties, zh_CN.json",
                         "description": "国际化文件后缀，多个之间用,隔开，当前支持properties和json格式的文件"
                     },
                     "fineI18nTool.i18nFuncName": {
