@@ -14,7 +14,13 @@ VS Code / Cursor 扩展：**国际化辅助**（Inlay Hint、自动补全）+ **
 - 支持按后缀扫描 **`.properties`**、**`.json`** 等国际化资源（见设置 `fineI18nTool.i18nFileSuffix`）。
 - 保存 `.properties` 时会刷新内存中的词条映射。
 
-### 2. FDL Workspace Info
+### 2. Icon Font Hint
+
+- 扫描项目中的 iconfont TTF 文件（默认 `**/iconfont.ttf`），读取字体 `cmap` 表中的字符编码。
+- 在 **JavaScript / TypeScript** 中按配置的正则匹配字符串里的 icon 编码，并在匹配文本后展示对应 Unicode 图标。
+- 默认匹配规则为 `(?:fdl-)?icon-\[([0-9a-fA-F]+)\]`，例如 `'flex items-center icon-[e67a] fdl-icon-[e67a]'` 会在 `icon-[e67a]` / `fdl-icon-[e67a]` 后展示 `e67a` 对应的 iconfont 字符。
+
+### 3. FDL Workspace Info
 
 在 **FineDataLink 前端 monorepo 根目录**打开工作区时，在**状态栏**显示 `FDL` 相关信息（非该结构的工作区会自动隐藏，避免误报）：
 
@@ -52,6 +58,14 @@ pnpm run package:vsix   # 先 webpack，再打 VSIX（使用 --no-dependencies�
 |--------|------|
 | `fineI18nTool.i18nFileSuffix` | 国际化文件后缀，多个用英文逗号分隔，例如 `_zh_CN.properties, zh_CN.json`。 |
 | `fineI18nTool.i18nFuncName` | 代码里国际化方法名，默认 `t`。 |
+
+### 图标提示（`fineI18nTool.icon_font_hint.*`）
+
+| 配置项 | 说明 |
+|--------|------|
+| `fineI18nTool.icon_font_hint.enabled` | 是否启用 iconfont 图标行内提示。 |
+| `fineI18nTool.icon_font_hint.iconfontFileGlob` | iconfont TTF 文件路径或 glob，多个用英文逗号分隔，默认 `**/iconfont.ttf`。 |
+| `fineI18nTool.icon_font_hint.matchRegex` | 用于从字符串中匹配 icon 编码的正则。优先读取命名捕获组 `code`，否则读取第一个捕获组。 |
 
 ### FDL Workspace Info（`fdlWorkspaceInfo.*`）
 

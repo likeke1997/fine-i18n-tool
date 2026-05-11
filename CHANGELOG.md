@@ -6,6 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- v0.08 支持从 iconfont TTF 文件读取编码并显示图标行内提示，默认匹配 `icon-[xxxx]` 和 `fdl-icon-[xxxx]`
 - v0.07 调整i18nFileSuffix默认配置
 - v0.06 更新扩展名称
 - v0.05 支持展示工作区信息

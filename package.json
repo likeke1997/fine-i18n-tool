@@ -3,8 +3,8 @@
     "author": "Cauchy.Ke",
     "publisher": "CauchyKe",
     "displayName": "FINE Dev Tools",
-    "description": "i18n inlay hints & completion for JS/TS; FDL monorepo workspace info (status bar, dev URLs, port checks).",
-    "version": "0.0.7",
+    "description": "i18n and iconfont inlay hints & completion for JS/TS; FDL monorepo workspace info (status bar, dev URLs, port checks).",
+    "version": "0.0.8",
     "engines": {
         "vscode": "^1.96.0"
     },
@@ -61,6 +61,26 @@
                         "type": "string",
                         "default": "t",
                         "description": "国际化方法名称"
+                    }
+                }
+            },
+            {
+                "title": "Icon Font Hint",
+                "properties": {
+                    "fineI18nTool.icon_font_hint.enabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "是否启用 iconfont 图标行内提示。"
+                    },
+                    "fineI18nTool.icon_font_hint.iconfontFileGlob": {
+                        "type": "string",
+                        "default": "**/iconfont.ttf",
+                        "description": "iconfont TTF 文件路径或 glob，多个用英文逗号分隔。"
+                    },
+                    "fineI18nTool.icon_font_hint.matchRegex": {
+                        "type": "string",
+                        "default": "(?:fdl-)?icon-\\[([0-9a-fA-F]+)\\]",
+                        "description": "用于从字符串中匹配 icon 编码的正则。优先使用命名捕获组 code，否则使用第一个捕获组。"
                     }
                 }
             },
