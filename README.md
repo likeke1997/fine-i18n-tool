@@ -1,6 +1,6 @@
 # fine-i18n-tool
 
-VS Code / Cursor 扩展：**国际化辅助**（Inlay Hint、自动补全）+ **FDL 前端工作区信息**（状态栏展示本地 dev / 代理相关 URL 与端口探测）。
+VS Code / Cursor 扩展：**国际化辅助**（Inlay Hint、自动补全）+ **FDL 前端工作区信息**（状态栏展示本地 dev / 代理相关 URL 与端口探测）+ **飞书功能分支**（分支标题查询、搜索与切换）。
 
 ![example](https://github.com/likeke1997/fine-i18n-tool/blob/master/images/example.gif)
 
@@ -30,6 +30,24 @@ VS Code / Cursor 扩展：**国际化辅助**（Inlay Hint、自动补全）+ **
 - **端口探测**：对本地 adapter / platform 端口做 TCP 探测；支持窗口聚焦后防抖刷新、可选定时重测、占用二次确认等（见设置 `fdlWorkspaceInfo.portCheck.*`）。
 
 点击状态栏可打开快捷操作（打开 Dev / Proxy URL、打开 adapter 配置、刷新等）。
+
+### 4. Feishu Branch Lens
+
+点击状态栏中的 **飞书功能分支**、SCM 标题栏分支按钮，或使用快捷键 `⌘⌥B`（Windows/Linux：`Ctrl+Alt+B`），可打开增强的本地分支列表：
+
+- 识别 `feature/m-6995279777`、`g-6653379205-hotfix` 等分支名中的任务编号。
+- 通过 `~/.codex/config.toml` 中的 `FeishuProjectMcp` 查询飞书工作项标题。
+- 支持按分支名或工作项标题搜索，选择后直接切换分支。
+- 查询在后台执行，同一任务的重复请求会合并；成功标题缓存 24 小时。
+- URL-only 配置使用飞书 OAuth，首次查询自动打开浏览器授权，令牌保存在 VS Code SecretStorage。
+- 兼容旧版 `http_headers` 固定请求头配置；令牌不会写入项目目录或标题缓存。
+
+推荐配置：
+
+```toml
+[mcp_servers.FeishuProjectMcp]
+url = "https://project.feishu.cn/mcp_server/v1"
+```
 
 ---
 
@@ -84,6 +102,7 @@ pnpm run package:vsix   # 先 webpack，再打 VSIX（使用 --no-dependencies�
 
 ## 相关命令（命令面板）
 
+- `FINE Dev Tools: 切换飞书功能分支`（`feishuBranchLens.show`）
 - `Refresh Workspace Info`（`fdlWorkspaceInfo.refresh`）
 - `Open FUI Adapter Config`（`fdlWorkspaceInfo.openConfig`）
 - `Open URL`（`fdlWorkspaceInfo.openItem`）

@@ -3,8 +3,8 @@
     "author": "Cauchy.Ke",
     "publisher": "CauchyKe",
     "displayName": "FINE Dev Tools",
-    "description": "i18n and iconfont inlay hints & completion for JS/TS; FDL monorepo workspace info (status bar, dev URLs, port checks).",
-    "version": "0.0.8",
+    "description": "i18n and iconfont hints for JS/TS; FDL workspace info; searchable Git branches with Feishu work-item titles.",
+    "version": "0.0.9",
     "engines": {
         "vscode": "^1.96.0"
     },
@@ -24,6 +24,7 @@
     "activationEvents": [
         "onLanguage:javascript",
         "onLanguage:typescript",
+        "onCommand:feishuBranchLens.show",
         "onStartupFinished"
     ],
     "main": "./dist/extension.js",
@@ -46,8 +47,31 @@
             {
                 "command": "fdlWorkspaceInfo.showActions",
                 "title": "Show Workspace Info Actions"
+            },
+            {
+                "command": "feishuBranchLens.show",
+                "title": "切换飞书功能分支",
+                "category": "FINE Dev Tools",
+                "icon": "$(git-branch)"
             }
         ],
+        "keybindings": [
+            {
+                "command": "feishuBranchLens.show",
+                "key": "ctrl+alt+b",
+                "mac": "cmd+alt+b",
+                "when": "workspaceFolderCount != 0"
+            }
+        ],
+        "menus": {
+            "scm/title": [
+                {
+                    "command": "feishuBranchLens.show",
+                    "when": "scmProvider == git",
+                    "group": "navigation@100"
+                }
+            ]
+        },
         "configuration": [
             {
                 "title": "fine-i18n-tool",
